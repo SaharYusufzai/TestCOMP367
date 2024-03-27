@@ -1,10 +1,45 @@
 pipeline {
-    agent any
-    stages {
-        stage('Build') {
+     agent any
+
+   environment {
+	DOCKER_PASSWORD=credentials('3690859a-1130-4eae-a9b1-72e6fb0f0803')
+  }		
+    stages{
+        stage('Check out stage') {
             steps {
-                sh 'mvn clean install'
+                git 'https://github.com/SaharYusufzai/TestCOMP367.git'
             }
         }
+        stage('Building the app using maven') {
+            steps {
+                sh '''
+                echo building the maven application
+                mvn clean install
+                '''
+            }
+        }
+        stage('Building the docker image') {
+            steps {
+                sh '''
+                docker build . -t maven_app:${BUILD_NUMBER}
+		        docker tag maven_app:${BUILD_NUMBER} saharyusufzaii880/maven_app:${BUILD_NUMBER}
+                '''
+            }
+        }
+        stage('Docker login') {
+            steps {
+               sh ''' 
+	           echo ${DOCKER_PASSWORD} | docker login -u saharyusufzaii880 --password-stdin 
+               '''
+            }
+        }
+        stage('Push Docker Image'){
+            steps{
+               sh '''  
+               docker push saharyusufzaii880/maven_app:${BUILD_NUMBER}
+               '''
+            }
+        }
+	    	    
     }
 }
