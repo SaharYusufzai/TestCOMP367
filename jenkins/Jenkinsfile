@@ -7,7 +7,7 @@ pipeline {
     stages{
         stage('Check out stage') {
             steps {
-                git 'https://github.com/SaharYusufzai/TestCOMP367.git'
+                git branch: 'main', url: 'https://github.com/SaharYusufzai/TestCOMP367.git', credentialsId: '4f6bf444-e466-46cb-aed6-d9361209ea5d'
             }
         }
         stage('Building the app using maven') {
